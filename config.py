@@ -28,3 +28,28 @@ class Config(object):
     SESSION_USE_SIGNER = True
     #设置过期时间，要求SESSION_PERMANENT,True,默认是31天
     PERMANENT_SESSION_LIFETIME = 60*60*24#一天
+
+#一下代码封装不同开发环境下的配置信息
+class DevlopmentConfig(Config):
+    '''开发环境'''
+    DEBUG = True
+    SQLALCHEMY_DATABASE_URI = "mysql://root:mysql@127.0.0.1:3306/information"
+
+class ProductionConfig(Config):
+    '''生产环境'''
+    DEBUG = True
+    SQLALCHEMY_DATABASE_URI = "mysql://root:mysql@127.0.0.1:3306/information_pro"
+
+
+class UnittestConfig(Config):
+    '''测试环境'''
+    DEBUG = True
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = "mysql://root:mysql@127.0.0.1:3306/information_case"
+
+#定义一个字典，存储关键字对应的不同的配置类的类名
+configs = {
+    "dev":DevlopmentConfig,
+    "pro":ProductionConfig,
+    "unit":UnittestConfig
+}
