@@ -20,7 +20,6 @@ manager = Manager(app)
 def index():
     #测试redis数据库
     # redis_store.set("name","zxc")
-    
 
     #测试session
     # from flask import session
