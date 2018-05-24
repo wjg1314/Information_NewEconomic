@@ -1,11 +1,19 @@
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from redis import StrictRedis
 from flask_wtf.csrf import CSRFProtect
+from flask_session import Session
+
+
 
 
 class Config(object):
     '''配置文件的加载'''
+
+    #项目秘钥：csrf/session，还有其他的一些签名算法会用、
+    SECRET_KEY = "uW6EYLDcuCyd/v0mEWDSG/QV/XVGW/WR1bfo5h1p4U32h2RAiJ0FLrZLwfqJRuwi"
+
     #开启调试模式
     DEBUG = True
 
@@ -18,6 +26,16 @@ class Config(object):
     REDIS_HOST ='192.168.5.129'
     REDIS_PORT = 6379
 
+    #指定session使用什么来存储
+    SESSION_TYPE = "redis"
+    # 指定session数据存储在后端的位置
+    SESSION_REDIS = StrictRedis(host=REDIS_HOST,port=REDIS_PORT)
+    #是否使用secret_key签名你的session
+    SESSION_USE_SIGNER = True
+    #设置过期时间，要求SESSION_PERMANENT,True,默认是31天
+    PERMANENT_SESSION_LIFETIME = 60*60*24#一天
+
+
 app = Flask(__name__)
 
 #获取配置信息
@@ -29,13 +47,21 @@ db = SQLAlchemy(app)
 #创建连接到redis数据库的对象
 redis_store = StrictRedis(host=Config.REDIS_HOST,port=Config.REDIS_PORT)
 
-#开启csrf保护：因为项目中的表单不再使用flaskform来实现，所以不会自动开启csrf保护，需要自己开启
+#开启csrf保护：因为项目中的表单不再使用flaskform来实现，#指定session数据存储在后端的位置所以不会自动开启csrf保护，需要自己开启
 CSRFProtect(app)
+
+#指定session数据存储在后端的位置
+Session(app)
 
 @app.route("/")
 def index():
     #测试redis数据库
-    redis_store.set("name","zxc")
+    # redis_store.set("name","zxc")
+
+    #测试session
+    from flask import session
+    #会将{‘age’:'18'},写入到cookie
+    session["age"] = '18'
     return "index"
 
 if __name__ == '__main__':
